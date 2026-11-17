@@ -46,6 +46,7 @@ for i in range(1, total + 1):
 
     diferenca = cv2.absdiff(frame_anterior, atual)
 
+    # Aplicação do limiar 
     _, movimento = cv2.threshold(diferenca, limiar, 255, cv2.THRESH_BINARY)
 
     movimento = cv2.medianBlur(movimento, 5)
@@ -87,21 +88,24 @@ for i in range(1, total + 1):
         fp += np.count_nonzero(previsto & ~real & validos)
         fn += np.count_nonzero(~previsto & real & validos)
 
+    # Amplia 3x só para visualizar e gravar (a base é 320x240); o processamento já foi feito
+    frame_grande = cv2.resize(frame, None, fx=3, fy=3)
+    movimento_grande = cv2.resize(movimento, None, fx=3, fy=3)
+
     if gravador is None:
-        altura_video, largura_video = frame.shape[:2]
+        altura_video, largura_video = frame_grande.shape[:2]
         codec = cv2.VideoWriter_fourcc(*"MJPG")
         gravador = cv2.VideoWriter(
-            str(saida / "diferenca_anotado.avi"),
+            str(saida / "metodo_sequencial_anotado.avi"),
             codec,
             25,
             (largura_video, altura_video),
             isColor=True,
         )
-    gravador.write(frame)
+    gravador.write(frame_grande)
 
-    # Títulos sem acento: o imshow no Windows não exibe acentos corretamente
-    cv2.imshow("Deteccao de movimento", frame)
-    cv2.imshow("Mascara", movimento)
+    cv2.imshow("Deteccao de movimento", frame_grande)
+    cv2.imshow("Mascara", movimento_grande)
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
 
@@ -125,10 +129,10 @@ texto = (
 )
 print(texto)
 
-with open(saida / "investigacao_metodo_sequencial.txt", "w", encoding="utf-8") as arquivo:
+with open(saida / "metodo_sequencial_investigacao.txt", "w", encoding="utf-8") as arquivo:
     arquivo.write(texto)
 
-with open(saida / "diferenca_serie.csv", "w") as arquivo:
+with open(saida / "metodo_sequencial_serie.csv", "w") as arquivo:
     arquivo.write("frame,n_regioes,area_pixels\n")
     for frame_i, quantidade, area in serie:
         arquivo.write(f"{frame_i},{quantidade},{area}\n")

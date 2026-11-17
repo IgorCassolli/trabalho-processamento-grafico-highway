@@ -4,11 +4,18 @@
 
 **CDnet 2014 — Change Detection Benchmark**, categoria **Baseline**, sequência **Highway**.
 
-- 1.700 frames de uma rodovia filmada por uma câmera fixa (320x240).
-- `assets/highway/input/`: frames de entrada (`in000001.jpg` a `in001700.jpg`).
-- `assets/highway/groundtruth/`: máscaras de referência (`gt000001.png` a `gt001700.png`).
-- `assets/highway/ROI.bmp`: região espacial de interesse.
-- `assets/highway/temporalROI.txt`: intervalo de avaliação (frames 470 a 1700).
+1.700 frames de uma rodovia filmada por uma câmera fixa (320x240).
+
+### O que tem em `assets/highway/`
+
+| Pasta ou arquivo | O que é |
+|---|---|
+| `input/` | **Os frames do vídeo** (`in000001.jpg` a `in001700.jpg`). É o que o programa recebe para processar, na ordem do número. Cada arquivo é uma foto colorida de um instante da rodovia. |
+| `groundtruth/` | **A resposta certa**, feita à mão pelos autores da base (`gt000001.png` a `gt001700.png`). Há uma imagem para cada frame, em tons de cinza, em que cada pixel diz o que realmente aconteceu ali (movimento, fundo, sombra etc., ver tabela abaixo). O programa nunca usa essas imagens para detectar o movimento. Elas servem só **depois**, para comparar com a máscara que o programa gerou e calcular precisão, recall e F1. |
+| `ROI.bmp` | **Região de interesse**: imagem que marca a parte do quadro que vale para a avaliação. Pixels fora dela não entram na conta. (`ROI.jpg` é a mesma imagem em outro formato e não é usada pelo código.) |
+| `temporalROI.txt` | **Intervalo de tempo da avaliação**: dois números (`470 1700`). Só os frames desse intervalo são avaliados. Antes do 470 o vídeo serve para o método "aprender" a cena. |
+
+Resumindo: `input/` é o que **entra** no programa, e `groundtruth/` é o gabarito usado para **corrigir** o que ele devolve.
 
 Rótulos das máscaras de referência:
 
@@ -61,9 +68,9 @@ Limitação conhecida: por comparar só dois frames, o método pega bem as borda
 
 | Arquivo | Conteúdo |
 |---|---|
-| `diferenca_anotado.avi` | vídeo com as caixas desenhadas |
-| `diferenca_serie.csv` | frame, número de regiões e área do movimento |
-| `investigacao_metodo_sequencial.txt` | precisão, recall, F1 e tempo médio por frame |
+| `metodo_sequencial_anotado.avi` | vídeo com as caixas desenhadas |
+| `metodo_sequencial_serie.csv` | frame, número de regiões e área do movimento |
+| `metodo_sequencial_investigacao.txt` | precisão, recall, F1 e tempo médio por frame |
 
 ## Método de fundo adaptativo (a fazer)
 
@@ -77,10 +84,6 @@ _Lacuna para a segunda parte, em `metodo_fundo_adaptativo.py`._
 - Mesma extração de regiões (contornos, caixas, área mínima de 50 pixels).
 - Mesma avaliação: frames 470 a 1700, ignorando os rótulos 50, 170 e 85, com precisão, recall e F1.
 - Mesma medição de tempo (só o processamento, em ms por frame).
-- Mesmas saídas, com o nome do método no lugar de `diferenca`:
-  - `resultados/fundo_anotado.avi`
-  - `resultados/fundo_serie.csv`
-  - `resultados/investigacao_metodo_fundo_adaptativo.txt`
 - O fundo precisa ser atualizado desde o frame 1 (para aprender a cena), mesmo que a avaliação só comece no 470.
 
 **Valores a definir e registrar:** limiar, taxa de aprendizado (`alfa`) e se a atualização do fundo é seletiva (só onde não há movimento) ou em toda a imagem.
@@ -89,7 +92,7 @@ _Lacuna para a segunda parte, em `metodo_fundo_adaptativo.py`._
 
 | Método | Precisão | Recall | F1 | ms/frame |
 |---|---|---|---|---|
-| Diferença de frames | _ver `investigacao_metodo_sequencial.txt`_ | | | |
+| Diferença de frames | _ver `metodo_sequencial_investigacao.txt`_ | | | |
 | Fundo adaptativo | _a preencher_ | | | |
 
 ## Arquivos
